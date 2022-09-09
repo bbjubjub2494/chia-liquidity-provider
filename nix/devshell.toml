@@ -1,0 +1,4 @@
+name = "dexie-liquidity-provider"
+
+[[commands]]
+package = "black"
