@@ -19,4 +19,9 @@ python3Packages.buildPythonApplication {
     aiohttp
     click
   ];
+
+  checkInputs = with python3Packages; [
+    pytestCheckHook
+    pytest-asyncio
+  ];
 }
