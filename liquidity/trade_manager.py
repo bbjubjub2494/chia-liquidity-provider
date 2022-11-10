@@ -15,7 +15,7 @@ from chia.wallet.trading.trade_status import TradeStatus
 from chia.wallet.trade_record import TradeRecord
 
 from liquidity.utils import make_wallet_rpc_client, Asset, XCH, TDBX
-from liquidity import LiquidityCurve, dexie_api
+from liquidity import LiquidityCurve, dexie_api, hashgreen_api
 
 log = logging.getLogger(__name__)
 
@@ -93,6 +93,7 @@ class TradeManager:
     wallet: WalletRpcClient
     state_repo: StateRepository
     dexie: dexie_api.Api
+    hashgreen: hashgreen_api.Api
 
     @classmethod
     async def from_scratch(
@@ -104,6 +105,7 @@ class TradeManager:
         wallet: WalletRpcClient,
         state_repo: StateRepository,
         dexie: dexie_api.Api,
+        hashgreen: hashgreen_api.Api,
     ) -> "TradeManager":
         while not await wallet.get_synced():
             log.info("waiting for wallet to be synced")
@@ -118,7 +120,7 @@ class TradeManager:
             pricing=pricing,
         )
         await state_repo.store(st)
-        tm = cls(wallet=wallet, state_repo=state_repo, dexie=dexie)
+        tm = cls(wallet=wallet, state_repo=state_repo, dexie=dexie, hashgreen=hashgreen)
         await tm._create_trades(p_init)
         return tm
 
@@ -135,6 +137,7 @@ class TradeManager:
         log.info("created trade %s", trade.trade_id)
         st.open_trades[trade.trade_id] = TradeManager.TradeData(offer.to_bech32())
         await self.dexie.post_offer(offer)
+        await self.hashgreen.post_offer(offer)
         log.info("trade %s successfully posted", trade.trade_id)
         await self.state_repo.store(st)
 

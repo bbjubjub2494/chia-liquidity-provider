@@ -7,7 +7,7 @@ from chia.types.blockchain_format.sized_bytes import bytes32
 from chia.wallet.trade_record import TradeRecord
 
 from liquidity.utils import make_wallet_rpc_client, XCH, USDS
-from liquidity import LiquidityCurve, Pricing, TradeManager, dexie_api
+from liquidity import LiquidityCurve, Pricing, TradeManager, dexie_api, hashgreen_api
 
 log = logging.getLogger("liquidity")
 
@@ -93,6 +93,7 @@ def init(fingerprint, x_max, p_min, p_max, p_init):
                 wallet,
                 state_repo,
                 dexie_api.mainnet,
+                hashgreen_api.mainnet,
             )
 
     asyncio.run(amain())
@@ -103,7 +104,9 @@ def manage():
     async def amain():
         await logging_config()
         async with make_wallet_rpc_client() as wallet, TradeManager.StateRepository.open() as state_repo:
-            tm = TradeManager(wallet, state_repo, dexie_api.mainnet)
+            tm = TradeManager(
+                wallet, state_repo, dexie_api.mainnet, hashgreen_api.mainnet
+            )
             while True:
                 try:
                     await tm.check_open_trades()
