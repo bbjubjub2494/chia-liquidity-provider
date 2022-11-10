@@ -11,13 +11,18 @@ from chia.rpc.wallet_rpc_client import WalletRpcClient
 from chia.wallet.trading.offer import Offer
 from chia.wallet.trade_record import TradeRecord
 
-from liquidity import LiquidityCurve, TradeManager, Pricing, dexie_api
+from liquidity import LiquidityCurve, TradeManager, Pricing, dexie_api, hashgreen_api
 from liquidity.utils import Asset, XCH, TDBX
 
 
 @pytest.fixture
 def dexie():
     return Mock(spec=dexie_api.testnet)
+
+
+@pytest.fixture
+def hashgreen():
+    return Mock(spec=hashgreen_api.mainnet)
 
 
 @pytest.fixture
@@ -205,7 +210,7 @@ def expected_trades():
 
 
 @pytest.mark.asyncio
-async def test_coin_selection(select_coins, state_repo, dexie):
+async def test_coin_selection(select_coins, state_repo, dexie, hashgreen):
     wallet = Mock()
     wallet.select_coins = select_coins
     wallet.create_offer_for_ids = Mock(
@@ -227,11 +232,12 @@ async def test_coin_selection(select_coins, state_repo, dexie):
             wallet,
             state_repo,
             dexie,
+            hashgreen,
         )
 
 
 @pytest.mark.asyncio
-async def test_coin_selection_toomuch(select_coins, state_repo, dexie):
+async def test_coin_selection_toomuch(select_coins, state_repo, dexie, hashgreen):
     pytest.skip("FIXME")
     wallet = Mock()
     wallet.select_coins = select_coins
@@ -254,12 +260,13 @@ async def test_coin_selection_toomuch(select_coins, state_repo, dexie):
             wallet,
             state_repo,
             dexie,
+            hashgreen,
         )
 
 
 @pytest.mark.asyncio
 async def test_create_offers(
-    state_repo, select_coins, create_offer_for_ids, expected_trades, dexie
+    state_repo, select_coins, create_offer_for_ids, expected_trades, dexie, hashgreen
 ):
     wallet = Mock()
     wallet.select_coins = select_coins
@@ -272,7 +279,14 @@ async def test_create_offers(
     p_max = 200 * TDBX / (1 * XCH)
     curve = LiquidityCurve.make_out_of_range(x_max, p_min, p_max)
     trade_manager = await TradeManager.from_scratch(
-        XCH, TDBX, 0, Pricing.make(curve, ".1" * XCH, x_max), wallet, state_repo, dexie
+        XCH,
+        TDBX,
+        0,
+        Pricing.make(curve, ".1" * XCH, x_max),
+        wallet,
+        state_repo,
+        dexie,
+        hashgreen,
     )
 
     state_repo.store.assert_called
@@ -280,7 +294,9 @@ async def test_create_offers(
 
 
 @pytest.mark.asyncio
-async def test_existing_offers(state_repo, select_coins, get_all_offers, dexie):
+async def test_existing_offers(
+    state_repo, select_coins, get_all_offers, dexie, hashgreen
+):
     pytest.skip("FIXME")
     wallet = Mock()
     wallet.select_coins = select_coins
@@ -296,7 +312,13 @@ async def test_existing_offers(state_repo, select_coins, get_all_offers, dexie):
 
 @pytest.mark.asyncio
 async def test_poll_offers_negative(
-    state_repo, select_coins, create_offer_for_ids, get_offer_1, expected_trades, dexie
+    state_repo,
+    select_coins,
+    create_offer_for_ids,
+    get_offer_1,
+    expected_trades,
+    dexie,
+    hashgreen,
 ):
     wallet = Mock()
     wallet.select_coins = select_coins
@@ -310,7 +332,14 @@ async def test_poll_offers_negative(
     p_max = 200 * TDBX / (1 * XCH)
     curve = LiquidityCurve.make_out_of_range(x_max, p_min, p_max)
     trade_manager = await TradeManager.from_scratch(
-        XCH, TDBX, 0, Pricing.make(curve, ".1" * XCH, x_max), wallet, state_repo, dexie
+        XCH,
+        TDBX,
+        0,
+        Pricing.make(curve, ".1" * XCH, x_max),
+        wallet,
+        state_repo,
+        dexie,
+        hashgreen,
     )
 
     state_repo.store.assert_called
@@ -326,6 +355,7 @@ async def test_poll_offers_positive(
     get_offer_2,
     expected_trades,
     dexie,
+    hashgreen,
 ):
     wallet = Mock()
     wallet.select_coins = select_coins
@@ -340,7 +370,14 @@ async def test_poll_offers_positive(
     p_max = 200 * TDBX / (1 * XCH)
     curve = LiquidityCurve.make_out_of_range(x_max, p_min, p_max)
     trade_manager = await TradeManager.from_scratch(
-        XCH, TDBX, 0, Pricing.make(curve, ".1" * XCH, x_max), wallet, state_repo, dexie
+        XCH,
+        TDBX,
+        0,
+        Pricing.make(curve, ".1" * XCH, x_max),
+        wallet,
+        state_repo,
+        dexie,
+        hashgreen,
     )
 
     wallet.create_offer_for_ids = create_offer_for_ids_2
@@ -370,6 +407,7 @@ async def test_flip_offer(
     get_offer_3,
     expected_trades,
     dexie,
+    hashgreen,
 ):
     wallet = Mock()
     wallet.select_coins = select_coins
@@ -384,7 +422,14 @@ async def test_flip_offer(
     p_max = 200 * TDBX / (1 * XCH)
     curve = LiquidityCurve.make_out_of_range(x_max, p_min, p_max)
     trade_manager = await TradeManager.from_scratch(
-        XCH, TDBX, 0, Pricing.make(curve, ".1" * XCH, x_max), wallet, state_repo, dexie
+        XCH,
+        TDBX,
+        0,
+        Pricing.make(curve, ".1" * XCH, x_max),
+        wallet,
+        state_repo,
+        dexie,
+        hashgreen,
     )
 
     wallet.create_offer_for_ids = create_offer_for_ids_2
