@@ -136,9 +136,13 @@ class TradeManager:
         )
         log.info("created trade %s", trade.trade_id)
         st.open_trades[trade.trade_id] = TradeManager.TradeData(offer.to_bech32())
-        await self.dexie.post_offer(offer)
-        await self.hashgreen.post_offer(offer)
-        log.info("trade %s successfully posted", trade.trade_id)
+        try:
+            await self.dexie.post_offer(offer)
+            await self.hashgreen.post_offer(offer)
+        except:
+            log.exception("error posting trade (ignoring)")
+        else:
+            log.info("trade %s successfully posted", trade.trade_id)
         await self.state_repo.store(st)
 
     async def check_open_trades(self):
