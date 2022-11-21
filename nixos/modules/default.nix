@@ -5,7 +5,7 @@
   systemd.services.liquidity-manage = {
     script = "${self.packages.${pkgs.system}.default}/bin/liquidity manage";
     wantedBy = ["multi-user.target"];
-    after = [ "chia-wallet.target"];
+    after = [ "network-online.target"];
     serviceConfig = {
       Type = "simple";
       User = "chia";
