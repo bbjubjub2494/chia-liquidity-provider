@@ -9,6 +9,7 @@
   inputs.flake-compat.flake = false;
   inputs.nixpkgs.url = "nixpkgs/nixos-unstable";
   inputs.chiaNix.url = "github:bbjubjub2494/chia.nix";
+  inputs.chiaNix.inputs.nixpkgs.follows = "nixpkgs";
 
   # Outputs are the public-facing interface to the flake.
   outputs = inputs @ {
