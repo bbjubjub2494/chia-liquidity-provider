@@ -1,5 +1,3 @@
-from . import utils, dexie_api
+from . import dexie_api, utils
 from .liquidity_curve import LiquidityCurve
-from .trade_manager import TradeManager, Pricing
-
-from .main import main
+from .trade_manager import Pricing, TradeManager

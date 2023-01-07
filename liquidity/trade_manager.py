@@ -1,21 +1,23 @@
 import asyncio
-import dataclasses
-import pathlib, shelve, os
-import logging
 import contextlib
+import dataclasses
+import logging
+import os
+import pathlib
+import shelve
 from typing import Optional
 from unittest.mock import Mock
-from chia.types.blockchain_format.coin import Coin
-from chia.wallet.trading.offer import Offer
 
-from chia.util.ints import uint32, uint64
-from chia.types.blockchain_format.sized_bytes import bytes32
 from chia.rpc.wallet_rpc_client import WalletRpcClient
-from chia.wallet.trading.trade_status import TradeStatus
+from chia.types.blockchain_format.coin import Coin
+from chia.types.blockchain_format.sized_bytes import bytes32
+from chia.util.ints import uint32, uint64
 from chia.wallet.trade_record import TradeRecord
+from chia.wallet.trading.offer import Offer
+from chia.wallet.trading.trade_status import TradeStatus
 
-from liquidity.utils import make_wallet_rpc_client, Asset, XCH, TDBX
 from liquidity import LiquidityCurve, dexie_api, hashgreen_api
+from liquidity.utils import TDBX, XCH, Asset, make_wallet_rpc_client
 
 log = logging.getLogger(__name__)
 
@@ -44,15 +46,11 @@ class Pricing:
         if base_amount not in (-self.base_amount, self.base_amount):
             raise ValueError()
         if quote_amount < 0:
-            quote_amount = self.quote_amounts[
-                (i := self.quote_amounts.index(-quote_amount) - 1)
-            ]
+            quote_amount = self.quote_amounts[(i := self.quote_amounts.index(-quote_amount) - 1)]
             if i < 0:
                 raise ValueError()
         else:
-            quote_amount = -self.quote_amounts[
-                self.quote_amounts.index(quote_amount) + 1
-            ]
+            quote_amount = -self.quote_amounts[self.quote_amounts.index(quote_amount) + 1]
         base_amount = -base_amount
         return base_amount, quote_amount
 
@@ -160,22 +158,10 @@ class TradeManager:
             received = offer.get_requested_amounts()
             sent = offer.get_offered_amounts()
             # FIXME: assumption: base asset quantity = increment
-            if received.keys() == {st.quote.asset_id} and sent.keys() == {
-                st.base.asset_id
-            }:
-                await self._create_trade(
-                    *st.pricing.flip(
-                        -sent[st.base.asset_id], received[st.quote.asset_id]
-                    )
-                )
-            elif received.keys() == {st.base.asset_id} and sent.keys() == {
-                st.quote.asset_id
-            }:
-                await self._create_trade(
-                    *st.pricing.flip(
-                        received[st.base.asset_id], -sent[st.quote.asset_id]
-                    )
-                )
+            if received.keys() == {st.quote.asset_id} and sent.keys() == {st.base.asset_id}:
+                await self._create_trade(*st.pricing.flip(-sent[st.base.asset_id], received[st.quote.asset_id]))
+            elif received.keys() == {st.base.asset_id} and sent.keys() == {st.quote.asset_id}:
+                await self._create_trade(*st.pricing.flip(received[st.base.asset_id], -sent[st.quote.asset_id]))
             st = await self.state_repo.load()
             del st.open_trades[trade_id]
             await self.state_repo.store(st)

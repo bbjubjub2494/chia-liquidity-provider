@@ -1,18 +1,18 @@
-import pytest
 import copy
 import importlib.resources
 import json
 from unittest.mock import Mock
-from chia.types.blockchain_format.coin import Coin
 
-from chia.util.ints import uint32, uint64
-from chia.types.blockchain_format.sized_bytes import bytes32
+import pytest
 from chia.rpc.wallet_rpc_client import WalletRpcClient
-from chia.wallet.trading.offer import Offer
+from chia.types.blockchain_format.coin import Coin
+from chia.types.blockchain_format.sized_bytes import bytes32
+from chia.util.ints import uint32, uint64
 from chia.wallet.trade_record import TradeRecord
+from chia.wallet.trading.offer import Offer
 
-from liquidity import LiquidityCurve, TradeManager, Pricing, dexie_api, hashgreen_api
-from liquidity.utils import Asset, XCH, TDBX
+from liquidity import LiquidityCurve, Pricing, TradeManager, dexie_api, hashgreen_api
+from liquidity.utils import TDBX, XCH, Asset
 
 
 @pytest.fixture
@@ -213,9 +213,7 @@ def expected_trades():
 async def test_coin_selection(select_coins, state_repo, dexie, hashgreen):
     wallet = Mock()
     wallet.select_coins = select_coins
-    wallet.create_offer_for_ids = Mock(
-        side_effect=NotImplementedError("create_offer_for_ids")
-    )
+    wallet.create_offer_for_ids = Mock(side_effect=NotImplementedError("create_offer_for_ids"))
     wallet.get_synced = get_synced
     wallet.get_logged_in_fingerprint = get_logged_in_fingerprint
 
@@ -241,9 +239,7 @@ async def test_coin_selection_toomuch(select_coins, state_repo, dexie, hashgreen
     pytest.skip("FIXME")
     wallet = Mock()
     wallet.select_coins = select_coins
-    wallet.create_offer_for_ids = Mock(
-        side_effect=NotImplementedError("create_offer_for_ids")
-    )
+    wallet.create_offer_for_ids = Mock(side_effect=NotImplementedError("create_offer_for_ids"))
     wallet.get_synced = get_synced
     wallet.get_logged_in_fingerprint = get_logged_in_fingerprint
 
@@ -265,9 +261,7 @@ async def test_coin_selection_toomuch(select_coins, state_repo, dexie, hashgreen
 
 
 @pytest.mark.asyncio
-async def test_create_offers(
-    state_repo, select_coins, create_offer_for_ids, expected_trades, dexie, hashgreen
-):
+async def test_create_offers(state_repo, select_coins, create_offer_for_ids, expected_trades, dexie, hashgreen):
     wallet = Mock()
     wallet.select_coins = select_coins
     wallet.create_offer_for_ids = create_offer_for_ids
@@ -294,9 +288,7 @@ async def test_create_offers(
 
 
 @pytest.mark.asyncio
-async def test_existing_offers(
-    state_repo, select_coins, get_all_offers, dexie, hashgreen
-):
+async def test_existing_offers(state_repo, select_coins, get_all_offers, dexie, hashgreen):
     pytest.skip("FIXME")
     wallet = Mock()
     wallet.select_coins = select_coins
@@ -382,16 +374,8 @@ async def test_poll_offers_positive(
 
     wallet.create_offer_for_ids = create_offer_for_ids_2
     await trade_manager.check_open_trades()
-    expected_trades.remove(
-        bytes32.from_hexstr(
-            "3bb30ac4655e8d99b06671bdb68cbcb3c81157a40e44e16be8b35b6db753e6e7"
-        )
-    )
-    expected_trades.add(
-        bytes32.from_hexstr(
-            "3f4cea32579aeac6a5d8a1b16b597028ffc2f81f2efe61cba257c0fe88687805"
-        )
-    )
+    expected_trades.remove(bytes32.from_hexstr("3bb30ac4655e8d99b06671bdb68cbcb3c81157a40e44e16be8b35b6db753e6e7"))
+    expected_trades.add(bytes32.from_hexstr("3f4cea32579aeac6a5d8a1b16b597028ffc2f81f2efe61cba257c0fe88687805"))
     state_repo.store.assert_called
     assert (await state_repo.load()).open_trades.keys() == expected_trades
 
@@ -439,15 +423,7 @@ async def test_flip_offer(
     wallet.create_offer_for_ids = create_offer_for_ids_3
     await trade_manager.check_open_trades()
 
-    expected_trades.remove(
-        bytes32.from_hexstr(
-            "3bb30ac4655e8d99b06671bdb68cbcb3c81157a40e44e16be8b35b6db753e6e7"
-        )
-    )
-    expected_trades.add(
-        bytes32.from_hexstr(
-            "453240bff4a250eeb7d4ebc53700585b79e4daf7cfca162db7393778a0688b28"
-        )
-    )
+    expected_trades.remove(bytes32.from_hexstr("3bb30ac4655e8d99b06671bdb68cbcb3c81157a40e44e16be8b35b6db753e6e7"))
+    expected_trades.add(bytes32.from_hexstr("453240bff4a250eeb7d4ebc53700585b79e4daf7cfca162db7393778a0688b28"))
     state_repo.store.assert_called
     assert (await state_repo.load()).open_trades.keys() == expected_trades

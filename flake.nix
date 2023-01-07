@@ -28,13 +28,14 @@
         chiaNix.overlays.default
       ];
 
-      nixosModules.default = import nixos/modules/default.nix { inherit self; };
+      nixosModules.default = import nixos/modules/default.nix {inherit self;};
 
       outputsBuilder = channels: {
         packages.default = channels.nixpkgs.callPackage nix/package.nix {
           inherit (channels.nixpkgs.chiaNix) chia python3Packages;
         };
         devShells.default = channels.nixpkgs.callPackage nix/devshell.nix {};
+        formatter = channels.nixpkgs.alejandra;
       };
 
       herculesCI.ciSystems = ["x86_64-linux"];
