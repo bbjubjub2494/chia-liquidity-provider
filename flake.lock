@@ -9,11 +9,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1671038049,
-        "narHash": "sha256-ETX2kTo8Dzbl+K+QYygVP7PoPzf5YTRx1Q1F6+LiqT4=",
+        "lastModified": 1673024443,
+        "narHash": "sha256-zRjUG/XQOlYs8H1nHC9qfvSuqrycXfi5+YRUBHyeHSc=",
         "owner": "bbjubjub2494",
         "repo": "chia.nix",
-        "rev": "d6aec2f26ecc29e9e985e2d2dcc07f5663853c20",
+        "rev": "1a3a76789e4b7d4580c632690dcccc26f4a769a3",
         "type": "github"
       },
       "original": {

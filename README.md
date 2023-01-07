@@ -1,6 +1,10 @@
 # Hybrid liquidity farming with Chia offers
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
+![License](https://img.shields.io/github/license/bbjubjub2494/chia-liquidity-provider)
 
-Implementation of an automated market-making strategy for [Chia offers]
+
+Implementation of a grid trading strategy for [Chia offers]
 with support for XCH-CAT and CAT-CAT pairs.
 
 
@@ -13,8 +17,8 @@ that then turns into a sell order at a slightly higher price when fullfilled.
 Each time the market price goes back and forth around the order,
 the operator gets to keep the difference as profit.
 
-Unlike Uniswap, this system requires an off-chain component to watch the trades,
-and publish new trades each time to a decentralized exchange such as [Dexie].
+Unlike Uniswap, this system requires an off-chain component to watch the offers,
+and publish new offers each time to a decentralized exchange such as [Dexie].
 
 That's all there is to it!
 Okay, the only thing left to do is to allocate the initial liquidity.
@@ -26,27 +30,24 @@ and vary the other side of the offer to fit the curve.
 
 ## Usage
 
-`liquidity init` should be used to create the initial offers.
+`clp init` should be used to create the initial offers.
 It expects the given wallet to contain appropriately split coins.
 
-`liquidity show-init` will indicate the expected coins.
+`clp show-init` will indicate the expected coins.
 
-`liquidity manage` can be run as a daemon to watch trades
+`clp manage` can be run as a daemon to watch trades
 with the help of the Chia light wallet.
-Only offers created through the `init` command and recorded in the `liquidity` database
+Only offers created through the `init` command and recorded in the `clp` database
 will be taken into account.
-If trades are performed while `liquidity manage` is not running,
+If trades are performed while `clp manage` is not running,
 it will flip them as soon as it catches up.
 
 
 ## TODO
 
-- something to split coins instead of inefficiently spamming `chia wallet send` from another wallet
 - manipulate offers directly to avoid weird race conditions
 - robustness against reorgs
-- use `sqlite3` as a database instead
 - support multiple positions independently
-- clean up code
 
 
 ## Wen moon?
