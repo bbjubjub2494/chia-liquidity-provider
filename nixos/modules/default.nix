@@ -1,6 +1,6 @@
 {self}: {pkgs, ...}: {
-  systemd.services.liquidity-manage = {
-    script = "${self.packages.${pkgs.system}.default}/bin/liquidity manage";
+  systemd.services.clp-manage = {
+    script = "${self.packages.${pkgs.system}.default}/bin/clp manage";
     wantedBy = ["multi-user.target"];
     after = ["network-online.target"];
     serviceConfig = {

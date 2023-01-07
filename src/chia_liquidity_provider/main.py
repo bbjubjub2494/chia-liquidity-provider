@@ -3,14 +3,21 @@ import logging
 from decimal import Decimal
 from unittest.mock import Mock
 
+import aiomisc
 import click
 from chia.types.blockchain_format.sized_bytes import bytes32
 from chia.wallet.trade_record import TradeRecord
 
-from liquidity import LiquidityCurve, Pricing, TradeManager, dexie_api, hashgreen_api
-from liquidity.utils import USDS, XCH, make_wallet_rpc_client
+from chia_liquidity_provider import Engine, Grid, LiquidityCurve, dexie_api, hashgreen_api
+from chia_liquidity_provider.services import DatabaseService, WalletRpcClientService
+from chia_liquidity_provider.types import Asset
 
-log = logging.getLogger("liquidity")
+log = logging.getLogger("chia_liquidity_provider")
+
+
+db = DatabaseService()
+rpc = WalletRpcClientService()
+services = [db, rpc]
 
 
 @click.group()
@@ -18,23 +25,19 @@ def main():
     pass
 
 
-async def logging_config():
-    logging.basicConfig(format="[%(levelname)s] %(message)s", level=logging.INFO)
-
-
 @main.command()
 @click.argument("x_max", type=Decimal)
 @click.argument("p_min", type=Decimal)
 @click.argument("p_max", type=Decimal)
 @click.argument("p_init", type=Decimal, default=0)
-def show_init(x_max, p_min, p_max, p_init):
+def show_init(x_max: Decimal, p_min: Decimal, p_max: Decimal, p_init: Decimal) -> None:
     """
     x_max: Total liquidity depth [XCH]"
     p_min: Minimum price [USD/XCH]
     p_max: Maximum price [USD/XCH]
     """
-    base = XCH
-    quote = USDS
+    base = Asset.XCH
+    quote = Asset.USDS
     x_max = x_max * base
     Δx = ".1" * base
     p_min = p_min * quote / (1 * base)
@@ -42,7 +45,7 @@ def show_init(x_max, p_min, p_max, p_init):
     p_init = p_init * quote / (1 * base)
     curve = LiquidityCurve.make_out_of_range(x_max, p_min, p_max)
 
-    p = Pricing.make(curve, Δx, x_max)
+    p = Grid.make(curve, Δx, x_max)
 
     total_x = 0
     total_y = 0
@@ -66,14 +69,14 @@ def show_init(x_max, p_min, p_max, p_init):
 @click.argument("p_min", type=Decimal)
 @click.argument("p_max", type=Decimal)
 @click.argument("p_init", type=Decimal, default=0)
-def init(fingerprint, x_max, p_min, p_max, p_init):
+def init(fingerprint: int, x_max: Decimal, p_min: Decimal, p_max: Decimal, p_init: Decimal) -> None:
     """
     x_max: Total liquidity depth [XCH]"
     p_min: Minimum price [USD/XCH]
     p_max: Maximum price [USD/XCH]
     """
-    base = XCH
-    quote = USDS
+    base = Asset.XCH
+    quote = Asset.USDS
     x_max = x_max * base
     Δx = ".1" * base
     p_min = p_min * quote / (1 * base)
@@ -81,34 +84,30 @@ def init(fingerprint, x_max, p_min, p_max, p_init):
     p_init = p_init * quote / (1 * base)
     curve = LiquidityCurve.make_out_of_range(x_max, p_min, p_max)
 
-    async def amain():
-        await logging_config()
-        async with make_wallet_rpc_client(fingerprint) as wallet, TradeManager.StateRepository.open() as state_repo:
-            tm = await TradeManager.from_scratch(
-                base,
-                quote,
-                p_init,
-                Pricing.make(curve, Δx, x_max),
-                wallet,
-                state_repo,
-                dexie_api.mainnet,
-                hashgreen_api.mainnet,
-            )
+    async def amain() -> None:
+        tm = await Engine.from_scratch(
+            base,
+            quote,
+            p_init,
+            Grid.make(curve, Δx, x_max),
+            rpc,
+            db,
+            dexie_api.mainnet,
+            hashgreen_api.mainnet,
+        )
 
-    asyncio.run(amain())
+    aiomisc.run(amain(), *services)
 
 
 @main.command()
-def manage():
-    async def amain():
-        await logging_config()
-        async with make_wallet_rpc_client() as wallet, TradeManager.StateRepository.open() as state_repo:
-            tm = TradeManager(wallet, state_repo, dexie_api.mainnet, hashgreen_api.mainnet)
-            while True:
-                try:
-                    await tm.check_open_trades()
-                except Exception as err:
-                    log.error("could not check open trades %s", err)
-                await asyncio.sleep(30)
+def manage() -> None:
+    async def amain() -> None:
+        tm = Engine(rpc, db, dexie_api.mainnet, hashgreen_api.mainnet)
+        while True:
+            try:
+                await tm.check_open_trades()
+            except Exception as err:
+                log.error("could not check open trades %s", err)
+            await asyncio.sleep(30)
 
-    asyncio.run(amain())
+    aiomisc.run(amain(), *services)

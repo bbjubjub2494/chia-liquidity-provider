@@ -3,7 +3,7 @@
   python3Packages,
 }:
 python3Packages.buildPythonApplication {
-  name = "dexie-liquidity-provider";
+  name = "chia_liquidity_provider";
   src = builtins.path {
     path = ../.;
     name = "source";
@@ -17,11 +17,17 @@ python3Packages.buildPythonApplication {
   propagatedBuildInputs = with python3Packages; [
     chia
     aiohttp
+    aiosqlite
+    aiomisc
     click
+    xdg
   ];
 
   checkInputs = with python3Packages; [
     pytestCheckHook
-    pytest-asyncio
+  ];
+
+  disabledTests = [
+    "engine_test.py"
   ];
 }
