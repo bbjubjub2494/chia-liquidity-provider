@@ -4,9 +4,9 @@ import logging
 import typing
 
 import xdg
-from blspy import PrivateKey
 from chia.consensus.coinbase import create_puzzlehash_for_pk
 from chia.util.ints import uint32
+from chia.util.keychain import KeyData
 from chia.wallet.derive_keys import master_sk_to_wallet_sk
 from chia.wallet.trade_record import TradeRecord
 from chia.wallet.trading.trade_status import TradeStatus
@@ -79,8 +79,10 @@ class Engine:
             return  # nothing to split
 
         position = await self.db.get_position()
-        sk = PrivateKey.from_bytes(bytes.fromhex((await self.rpc.conn.get_private_key(position.fingerprint))["sk"]))
-        wallet_sk = lambda i: master_sk_to_wallet_sk(sk, i)
+        rep = await self.rpc.conn.get_private_key(position.fingerprint)
+        kd = KeyData.from_mnemonic(rep["seed"])
+        wallet_sk = lambda i: master_sk_to_wallet_sk(kd.private_key, i)
+
         # split coins
         offset = await self.rpc.conn.get_current_derivation_index()
         additions = [

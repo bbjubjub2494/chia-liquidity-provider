@@ -30,7 +30,7 @@ def main():
 @click.argument("p_min", type=Decimal)
 @click.argument("p_max", type=Decimal)
 @click.argument("p_init", type=Decimal, default=0)
-def show_init(x_max: Decimal, p_min: Decimal, p_max: Decimal, p_init: Decimal) -> None:
+def show_init(x_max, p_min, p_max, p_init) -> None:
     """
     x_max: Total liquidity depth [XCH]"
     p_min: Minimum price [USD/XCH]
@@ -47,8 +47,8 @@ def show_init(x_max: Decimal, p_min: Decimal, p_max: Decimal, p_init: Decimal) -
 
     p = Grid.make(curve, Δx, x_max)
 
-    total_x = 0
-    total_y = 0
+    total_x = 0.0
+    total_y = 0.0
     for Δx, Δy in p.initial_orders(p_init):
         print(Δx / (1 * base), Δy / (1 * quote))
         total_x += max(0, -Δx / (1 * base))
@@ -69,7 +69,7 @@ def show_init(x_max: Decimal, p_min: Decimal, p_max: Decimal, p_init: Decimal) -
 @click.argument("p_min", type=Decimal)
 @click.argument("p_max", type=Decimal)
 @click.argument("p_init", type=Decimal, default=0)
-def init(fingerprint: int, x_max: Decimal, p_min: Decimal, p_max: Decimal, p_init: Decimal) -> None:
+def init(fingerprint: int, x_max, p_min, p_max, p_init) -> None:
     """
     x_max: Total liquidity depth [XCH]"
     p_min: Minimum price [USD/XCH]
