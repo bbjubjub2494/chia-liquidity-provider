@@ -2,7 +2,7 @@ imports = [
   "git.hooks",
 ]
 
-name = "dexie-liquidity-provider"
+name = "chia_liquidity_provider"
 
 [[commands]]
 package = "black"

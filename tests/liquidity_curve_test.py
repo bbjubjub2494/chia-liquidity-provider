@@ -1,6 +1,6 @@
 import math
 
-from liquidity import LiquidityCurve
+from chia_liquidity_provider import LiquidityCurve
 
 
 def test_make_out_of_range():
