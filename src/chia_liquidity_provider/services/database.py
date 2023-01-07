@@ -1,6 +1,5 @@
 import asyncio
 from dataclasses import dataclass
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
 
@@ -9,13 +8,14 @@ import aiosqlite
 import xdg
 
 from chia_liquidity_provider.abc import DatabaseServiceBase
+from chia_liquidity_provider.types.job import JobTableMixin
 from chia_liquidity_provider.types.order import OrderTableMixin
 from chia_liquidity_provider.types.position import PositionTableMixin
 
 DEFAULT_STATE_DIRECTORY = xdg.xdg_state_home() / "clp"
 
 
-class DatabaseService(aiomisc.Service, PositionTableMixin, OrderTableMixin, DatabaseServiceBase):
+class DatabaseService(aiomisc.Service, PositionTableMixin, OrderTableMixin, JobTableMixin, DatabaseServiceBase):
     """
     Mediate access to the database
     """

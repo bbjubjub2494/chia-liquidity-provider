@@ -20,6 +20,11 @@ def rpc(services, chia_simulator):
     return WalletRpcClientService()
 
 
+@pytest.fixture
+async def persistence(db):
+    return PersistenceService(db)
+
+
 @pytest.fixture(autouse=True)
 def _autouse_aiomisc_loop(loop, services):
     return
