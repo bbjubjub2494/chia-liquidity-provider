@@ -31,7 +31,7 @@ and vary the other side of the offer to fit the curve.
 ## Usage
 
 `clp init` should be used to create the initial offers.
-It expects the given wallet to contain appropriately split coins.
+It will issue transactions to split coins before use.
 
 `clp show-init` will indicate the expected coins.
 
