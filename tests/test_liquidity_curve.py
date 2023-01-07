@@ -1,6 +1,6 @@
-from liquidity import LiquidityCurve
-
 import math
+
+from liquidity import LiquidityCurve
 
 
 def test_make_out_of_range():
