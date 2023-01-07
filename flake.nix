@@ -36,5 +36,7 @@
         };
         devShells.default = channels.nixpkgs.callPackage nix/devshell.nix {};
       };
+
+      herculesCI.ciSystems = ["x86_64-linux"];
     };
 }
