@@ -1,13 +1,13 @@
 import contextlib
 import dataclasses
-from typing import Optional, Union
 from decimal import Decimal, localcontext
+from typing import Optional, Union
 
-from chia.util.config import load_config
-from chia.types.blockchain_format.sized_bytes import bytes32
-from chia.util.ints import uint32, uint64
-from chia.util.default_root import DEFAULT_ROOT_PATH
 from chia.rpc.wallet_rpc_client import WalletRpcClient
+from chia.types.blockchain_format.sized_bytes import bytes32
+from chia.util.config import load_config
+from chia.util.default_root import DEFAULT_ROOT_PATH
+from chia.util.ints import uint32, uint64
 
 
 @contextlib.asynccontextmanager
@@ -51,16 +51,12 @@ XCH = Asset(None, 1)
 
 # Stably USD
 USDS = Asset(
-    bytes32.from_hexstr(
-        "6d95dae356e32a71db5ddcb42224754a02524c615c5fc35f568c2af04774e589"
-    ),
+    bytes32.from_hexstr("6d95dae356e32a71db5ddcb42224754a02524c615c5fc35f568c2af04774e589"),
     2,
 )
 
 # Testnet Dexie Bucks
 TDBX = Asset(
-    bytes32.from_hexstr(
-        "d82dd03f8a9ad2f84353cd953c4de6b21dbaaf7de3ba3f4ddd9abe31ecba80ad"
-    ),
+    bytes32.from_hexstr("d82dd03f8a9ad2f84353cd953c4de6b21dbaaf7de3ba3f4ddd9abe31ecba80ad"),
     2,
 )
