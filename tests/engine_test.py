@@ -84,6 +84,7 @@ async def test_wallet(rpc, switch_fingerprint, wait_until_synced, wait_until_set
     """
     generate a fresh set of wallets, funded with 1 XCH and a billion CATs.
     """
+    await switch_fingerprint(chia_simulator.farmer_fingerprint)
     mnemonic = generate_mnemonic()
     await rpc.conn.add_key(mnemonic.split())
     kd = KeyData.from_mnemonic(mnemonic)
