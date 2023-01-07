@@ -11,7 +11,7 @@ from chia.consensus.coinbase import create_puzzlehash_for_pk
 from chia.types.blockchain_format.sized_bytes import bytes32
 from chia.util.bech32m import encode_puzzle_hash
 from chia.util.ints import uint16, uint32, uint64
-from chia.util.keychain import Keychain, KeyData, generate_mnemonic
+from chia.util.keychain import KeyData, generate_mnemonic
 from chia.wallet.derive_keys import master_sk_to_wallet_sk
 from chia.wallet.trading.offer import Offer
 
