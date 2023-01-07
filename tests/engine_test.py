@@ -11,6 +11,7 @@ from chia.consensus.coinbase import create_puzzlehash_for_pk
 from chia.types.blockchain_format.sized_bytes import bytes32
 from chia.util.bech32m import encode_puzzle_hash
 from chia.util.ints import uint16, uint32, uint64
+from chia.util.keychain import Keychain, KeyData, generate_mnemonic
 from chia.wallet.derive_keys import master_sk_to_wallet_sk
 from chia.wallet.trading.offer import Offer
 
@@ -79,11 +80,13 @@ XCH_WALLET_ID = uint32(1)
 
 
 @pytest.fixture
-async def test_wallet(rpc, switch_fingerprint, wait_until_synced, wait_until_settled, random_key, chia_simulator):
+async def test_wallet(rpc, switch_fingerprint, wait_until_synced, wait_until_settled, chia_simulator):
     """
     generate a fresh set of wallets, funded with 1 XCH and a billion CATs.
     """
-    kd = random_key
+    mnemonic = generate_mnemonic()
+    await rpc.conn.add_key(mnemonic.split())
+    kd = KeyData.from_mnemonic(mnemonic)
     first_wallet_sk = master_sk_to_wallet_sk(kd.private_key, 0)
     dest = encode_puzzle_hash(create_puzzlehash_for_pk(first_wallet_sk.get_g1()), "txch")
 
