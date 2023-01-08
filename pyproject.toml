@@ -26,7 +26,7 @@ include = "chia_liquidity_provider"
 from = "src"
 
 [tool.poetry.scripts]
-clp = "chia_liquidity_provider:main"
+clp = "chia_liquidity_provider.main:main"
 
 [tool.black]
 line-length = 120
