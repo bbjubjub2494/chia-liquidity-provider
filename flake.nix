@@ -32,7 +32,7 @@
 
       outputsBuilder = channels: {
         packages.default = channels.nixpkgs.callPackage nix/package.nix {
-          inherit (channels.nixpkgs.chiaNix) chia python3Packages;
+          inherit (channels.nixpkgs.chiaNix) chia chia-dev-tools python3Packages;
         };
         devShells.default = channels.nixpkgs.callPackage nix/devshell.nix {};
         formatter = channels.nixpkgs.alejandra;

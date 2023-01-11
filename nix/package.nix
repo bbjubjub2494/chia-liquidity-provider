@@ -1,5 +1,6 @@
 {
   chia,
+  chia-dev-tools,
   python3Packages,
 }:
 python3Packages.buildPythonApplication {
@@ -24,10 +25,8 @@ python3Packages.buildPythonApplication {
   ];
 
   checkInputs = with python3Packages; [
+    chia
+    chia-dev-tools
     pytestCheckHook
-  ];
-
-  disabledTests = [
-    "engine_test.py"
   ];
 }
