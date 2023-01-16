@@ -43,6 +43,11 @@ If trades are performed while `clp manage` is not running,
 it will flip them as soon as it catches up.
 
 
+## Development
+NOTE: integration tests start the chia simulator in the invoking user's home directory.
+If this is undesireable, make sure to run the unit tests in an isolated environment.
+
+
 ## TODO
 
 - manipulate offers directly to avoid weird race conditions

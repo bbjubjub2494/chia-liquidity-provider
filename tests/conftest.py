@@ -1,4 +1,5 @@
 import os
+import shutil
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
@@ -28,25 +29,28 @@ class ChiaSimulator:
     farmer_fingerprint: int
 
 
+SIMULATOR_NAME = "clp-integration-tests"
+
 # we keep this one constant to avoid replotting
 FARMER_MNEMONIC = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
 FARMER_FINGERPRINT = 3781984839
 
 
-@pytest.fixture(scope="session")
-def chia_simulator():
-    # keep stuff in this directory for hygiene
-    import tests
+@pytest.fixture
+def chia_simulator_root_path():
+    subprocess.run(["cdv", "sim", "-n", SIMULATOR_NAME, "create", "-m", FARMER_MNEMONIC], check=True)
+    root_path = Path.home() / ".chia/simulator" / SIMULATOR_NAME
+    try:
+        yield root_path
+    finally:
+        shutil.rmtree(root_path)
 
-    os.environ["HOME"] = os.path.dirname(tests.__file__)
 
-    subprocess.run(["chia", "init"])
-    simulator_root_path = Path.home() / ".chia/simulator"
-    subprocess.run(["cdv", "sim", "create", "-m", FARMER_MNEMONIC], check=True)
-    subprocess.run(["cdv", "sim", "start", "--wallet"], check=True)
-    root_path = simulator_root_path / "main"
-    os.environ["CHIA_ROOT"] = str(root_path)
+@pytest.fixture
+def chia_simulator(chia_simulator_root_path):
+    subprocess.run(["cdv", "sim", "-n", SIMULATOR_NAME, "start", "--wallet"], check=True)
+    os.environ["CHIA_ROOT"] = str(chia_simulator_root_path)
     try:
         yield ChiaSimulator(FARMER_FINGERPRINT)
     finally:
-        subprocess.run(["cdv", "sim", "stop", "--wallet"], check=True)
+        subprocess.run(["cdv", "sim", "-n", SIMULATOR_NAME, "stop", "--wallet", "--daemon"], check=True)
