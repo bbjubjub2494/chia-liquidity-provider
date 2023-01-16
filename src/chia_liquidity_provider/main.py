@@ -8,7 +8,7 @@ import click
 from chia.types.blockchain_format.sized_bytes import bytes32
 from chia.wallet.trade_record import TradeRecord
 
-from chia_liquidity_provider import Engine, Grid, LiquidityCurve, dexie_api, hashgreen_api
+from chia_liquidity_provider import Engine, Grid, LiquidityCurve, dexie_api, hashgreen_api, nostrdex_api
 from chia_liquidity_provider.services import DatabaseService, WalletRpcClientService
 from chia_liquidity_provider.types import Asset
 
@@ -18,6 +18,7 @@ log = logging.getLogger("chia_liquidity_provider")
 db = DatabaseService()
 rpc = WalletRpcClientService()
 services = [db, rpc]
+dexes = [dexie_api.mainnet, hashgreen_api.mainnet, nostrdex_api.mainnet]
 
 
 @click.group()
@@ -85,16 +86,7 @@ def init(fingerprint: int, x_max, p_min, p_max, p_init) -> None:
     curve = LiquidityCurve.make_out_of_range(x_max, p_min, p_max)
 
     async def amain() -> None:
-        tm = await Engine.from_scratch(
-            base,
-            quote,
-            p_init,
-            Grid.make(curve, Δx, x_max),
-            rpc,
-            db,
-            dexie_api.mainnet,
-            hashgreen_api.mainnet,
-        )
+        tm = await Engine.from_scratch(base, quote, p_init, Grid.make(curve, Δx, x_max), rpc, db, dexes)
 
     aiomisc.run(amain(), *services)
 
@@ -102,7 +94,7 @@ def init(fingerprint: int, x_max, p_min, p_max, p_init) -> None:
 @main.command()
 def manage() -> None:
     async def amain() -> None:
-        tm = Engine(rpc, db, dexie_api.mainnet, hashgreen_api.mainnet)
+        tm = Engine(rpc, db, dexes)
         while True:
             try:
                 await tm.check_open_trades()
