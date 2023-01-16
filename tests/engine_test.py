@@ -85,6 +85,12 @@ async def test_wallet(rpc, switch_fingerprint, wait_until_synced, wait_until_set
     generate a fresh set of wallets, funded with 1 XCH and a billion CATs.
     """
     await switch_fingerprint(chia_simulator.farmer_fingerprint)
+    await wait_until_settled(int(XCH_WALLET_ID))
+    await wait_until_synced()
+    rep = await rpc.conn.create_new_cat_and_wallet(amount=2 * TRILLION)
+    test_wallet_id = uint32(rep["wallet_id"])
+    test_asset_id = bytes32.from_hexstr(rep["asset_id"])
+
     mnemonic = generate_mnemonic()
     await rpc.conn.add_key(mnemonic.split())
     kd = KeyData.from_mnemonic(mnemonic)
@@ -92,16 +98,18 @@ async def test_wallet(rpc, switch_fingerprint, wait_until_synced, wait_until_set
     dest = encode_puzzle_hash(create_puzzlehash_for_pk(first_wallet_sk.get_g1()), "txch")
 
     await switch_fingerprint(chia_simulator.farmer_fingerprint)
-    await wait_until_synced()
-    rep = await rpc.conn.create_new_cat_and_wallet(amount=2 * TRILLION)
-    test_wallet_id = uint32(rep["wallet_id"])
-    test_asset_id = bytes32.from_hexstr(rep["asset_id"])
-    await rpc.conn.send_transaction(XCH_WALLET_ID, TRILLION, dest)
     await wait_until_settled(int(XCH_WALLET_ID))
+    await wait_until_synced()
+    await rpc.conn.send_transaction(XCH_WALLET_ID, TRILLION, dest)
     await rpc.conn.cat_spend(test_wallet_id, TRILLION, dest)
-    await wait_until_settled(test_wallet_id)
 
-    return TestWallet(fingerprint=kd.fingerprint, cat=Asset(test_asset_id))
+    # wait until confirmation that the test wallet is funded
+    await wait_until_settled(int(XCH_WALLET_ID))
+    await wait_until_settled(test_wallet_id)
+    try:
+        yield TestWallet(fingerprint=kd.fingerprint, cat=Asset(test_asset_id))
+    finally:
+        await rpc.conn.delete_key(fingerprint=kd.fingerprint)
 
 
 async def test_coin_create_offers(
@@ -152,7 +160,6 @@ async def test_cat_create_offers(
     test_wallet, rpc, switch_fingerprint, wait_until_synced, wait_until_settled, db, dexie, hashgreen
 ):
     await switch_fingerprint(test_wallet.fingerprint)
-    await wait_until_settled(int(XCH_WALLET_ID))
     await wait_until_synced()
 
     rep = await rpc.conn.create_wallet_for_existing_cat(test_wallet.cat.asset_id)
@@ -230,7 +237,6 @@ async def test_flip_offer(
     test_wallet, rpc, switch_fingerprint, wait_until_synced, wait_until_settled, db, dexie, hashgreen, chia_simulator
 ):
     await switch_fingerprint(test_wallet.fingerprint)
-    await wait_until_settled(int(XCH_WALLET_ID))
     await wait_until_synced()
 
     rep = await rpc.conn.create_wallet_for_existing_cat(test_wallet.cat.asset_id)
