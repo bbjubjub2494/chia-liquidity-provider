@@ -20,6 +20,7 @@ python3Packages.buildPythonApplication {
     aiosqlite
     aiomisc
     click
+    secp256k1
     xdg
   ];
 

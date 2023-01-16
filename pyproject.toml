@@ -13,6 +13,7 @@ click = ">=7"
 aiomisc = "^16.2.10"
 aiosqlite = "^0.17.0"
 xdg = "^5.1.1"
+secp256k1 = "^0.14.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.2"

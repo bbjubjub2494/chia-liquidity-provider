@@ -15,7 +15,7 @@ from chia.util.keychain import KeyData, generate_mnemonic
 from chia.wallet.derive_keys import master_sk_to_wallet_sk
 from chia.wallet.trading.offer import Offer
 
-from chia_liquidity_provider import Engine, Grid, LiquidityCurve, dexie_api, hashgreen_api
+from chia_liquidity_provider import Engine, Grid, LiquidityCurve, dexie_api, hashgreen_api, nostrdex_api
 from chia_liquidity_provider.types import Asset
 
 XCH = Asset.XCH
@@ -30,6 +30,16 @@ def dexie():
 @pytest.fixture
 def hashgreen():
     return Mock(spec=hashgreen_api.mainnet)
+
+
+@pytest.fixture
+def nostrdex():
+    return Mock(spec=nostrdex_api.mainnet)
+
+
+@pytest.fixture
+def dexes(dexie, hashgreen, nostrdex):
+    return [dexie, hashgreen, nostrdex]
 
 
 @pytest.fixture
@@ -134,8 +144,7 @@ async def test_coin_create_offers(
         Grid.make(curve, ".1" * XCH, x_max),
         rpc,
         db,
-        dexie,
-        hashgreen,
+        dexes,
     )
 
     rep = await rpc.conn.get_all_offers(exclude_taken_offers=True, file_contents=True)
@@ -149,7 +158,7 @@ async def test_coin_create_offers(
 
 
 async def test_cat_create_offers(
-    test_wallet, rpc, switch_fingerprint, wait_until_synced, wait_until_settled, db, dexie, hashgreen
+    test_wallet, rpc, switch_fingerprint, wait_until_synced, wait_until_settled, db, dexes
 ):
     await switch_fingerprint(test_wallet.fingerprint)
     await wait_until_settled(int(XCH_WALLET_ID))
@@ -178,8 +187,7 @@ async def test_cat_create_offers(
         Grid.make(curve, ".1" * test_wallet.cat, x_max),
         rpc,
         db,
-        dexie,
-        hashgreen,
+        dexes,
     )
 
     rep = await rpc.conn.get_all_offers(exclude_taken_offers=True, file_contents=True)
@@ -204,7 +212,7 @@ async def test_cat_create_offers(
 
 
 async def test_coin_selection_toomuch(
-    rpc, switch_fingerprint, wait_until_synced, wait_until_settled, test_wallet, db, dexie, hashgreen
+    rpc, switch_fingerprint, wait_until_synced, wait_until_settled, test_wallet, db, dexes
 ):
     await switch_fingerprint(test_wallet.fingerprint)
     await wait_until_settled(int(XCH_WALLET_ID))
@@ -221,13 +229,12 @@ async def test_coin_selection_toomuch(
             Grid.make(curve, ".1" * XCH, x_max),
             rpc,
             db,
-            dexie,
-            hashgreen,
+            dexes,
         )
 
 
 async def test_flip_offer(
-    test_wallet, rpc, switch_fingerprint, wait_until_synced, wait_until_settled, db, dexie, hashgreen, chia_simulator
+    test_wallet, rpc, switch_fingerprint, wait_until_synced, wait_until_settled, db, dexes, chia_simulator
 ):
     await switch_fingerprint(test_wallet.fingerprint)
     await wait_until_settled(int(XCH_WALLET_ID))
@@ -247,8 +254,7 @@ async def test_flip_offer(
         Grid.make(curve, ".1" * XCH, x_max),
         rpc,
         db,
-        dexie,
-        hashgreen,
+        dexes,
     )
 
     rep = await rpc.conn.get_all_offers(exclude_taken_offers=True, file_contents=True)

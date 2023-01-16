@@ -1,7 +1,7 @@
 import asyncio
 import dataclasses
 import logging
-import typing
+from typing import Any, List
 
 import xdg
 from chia.consensus.coinbase import create_puzzlehash_for_pk
@@ -11,8 +11,6 @@ from chia.wallet.derive_keys import master_sk_to_wallet_sk
 from chia.wallet.trade_record import TradeRecord
 from chia.wallet.trading.trade_status import TradeStatus
 
-if typing.TYPE_CHECKING:
-    from chia_liquidity_provider import dexie_api, hashgreen_api
 from chia_liquidity_provider.services import DatabaseService, WalletRpcClientService
 from chia_liquidity_provider.types import Asset, Grid, Order, Position
 
@@ -23,8 +21,7 @@ log = logging.getLogger(__name__)
 class Engine:
     rpc: WalletRpcClientService
     db: DatabaseService
-    dexie: "dexie_api.Api"
-    hashgreen: "hashgreen_api.Api"
+    dexes: List[Any]
 
     @classmethod
     async def find_wallet_id(cls, rpc: WalletRpcClientService, asset: Asset) -> uint32:
@@ -46,8 +43,7 @@ class Engine:
         grid: Grid,
         rpc: WalletRpcClientService,
         db: DatabaseService,
-        dexie: "dexie_api.Api",
-        hashgreen: "hashgreen_api.Api",
+        dexes: List[Any],
     ) -> "Engine":
         while not await rpc.conn.get_synced():
             log.info("waiting for wallet to be synced")
@@ -63,7 +59,7 @@ class Engine:
             grid,
         )
         await db.init_position(position)
-        self = cls(rpc=rpc, db=db, dexie=dexie, hashgreen=hashgreen)
+        self = cls(rpc=rpc, db=db, dexes=dexes)
 
         base_asset_amts = [-delta for delta, _ in position.grid.initial_orders(p_init) if delta < 0]
         quote_asset_amts = [-delta for _, delta in position.grid.initial_orders(p_init) if delta < 0]
@@ -112,10 +108,7 @@ class Engine:
         log.info("created trade %s", trade.trade_id)
         await self.db.insert_order(position, Order(trade.trade_id, base_delta, quote_delta))
         try:
-            await asyncio.gather(
-                self.dexie.post_offer(offer),
-                self.hashgreen.post_offer(offer),
-            )
+            await asyncio.gather(*(dex.post_offer(offer) for dex in self.dexes))
         except:
             log.exception("error posting trade (ignoring)")
         else:
