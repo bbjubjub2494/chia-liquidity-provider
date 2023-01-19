@@ -36,7 +36,6 @@ async def init_nostr():
     mnemonic = rep["seed"]
     bip32 = BIP32.from_seed(mnemonic_to_seed(mnemonic))
     privkey = coincurve.PrivateKey(bip32.get_privkey_from_path("m/44'/1237'/0'/0'/0/0"))
-    print(privkey.to_int())
     dexes.append(nostrdex_api.mainnet(privkey))
 
 
