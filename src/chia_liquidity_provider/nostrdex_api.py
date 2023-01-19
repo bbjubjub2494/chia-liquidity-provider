@@ -4,8 +4,9 @@ import json
 import time
 
 import aiohttp
-import secp256k1
+import coincurve
 from chia.types.blockchain_format.sized_bytes import bytes32
+from chia.wallet.trade_record import TradeRecord
 from chia.wallet.trading.offer import Offer
 
 
@@ -29,11 +30,11 @@ class Event:
         return hashlib.sha256(payload.encode()).digest()
 
     @classmethod
-    def make(cls, privkey: secp256k1.PrivateKey, created_at: int, kind: int, tags: list, content: str) -> "Event":
-        pubkey0 = privkey.pubkey.serialize()
+    def make(cls, privkey: coincurve.PrivateKey, created_at: int, kind: int, tags: list, content: str) -> "Event":
+        pubkey0 = coincurve.PublicKey.from_secret(privkey.secret).format()
         assert pubkey0[0] in (2, 3)  # BIP-340
         pubkey = bytes32(pubkey0[1:])
-        sig = privkey.schnorr_sign(cls._compute_id(pubkey, created_at, kind, tags, content), None, raw=True)
+        sig = privkey.sign_schnorr(cls._compute_id(pubkey, created_at, kind, tags, content))
         return cls(pubkey, created_at, kind, tags, content, sig)
 
     def to_json_dict(self) -> dict:
@@ -57,10 +58,16 @@ class Api:
     """
 
     relay_url: str
+    privkey: coincurve.PrivateKey
 
-    async def post_offer(self, offer: Offer) -> None:
-        privkey = secp256k1.PrivateKey()  # throwaway
-        event = Event.make(privkey=privkey, created_at=int(time.time()), kind=8444, tags=[], content=offer.to_bech32())
+    async def post_offer(self, tr: TradeRecord) -> None:
+        event = Event.make(
+            privkey=self.privkey,
+            created_at=int(tr.created_at_time),
+            kind=8444,
+            tags=[],
+            content=Offer.from_bytes(tr.offer).to_bech32(),
+        )
         async with (
             aiohttp.ClientSession() as session,
             session.ws_connect(self.relay_url) as socket,
@@ -71,4 +78,4 @@ class Api:
                 raise RuntimeError(rep[3])
 
 
-mainnet = Api("wss://nostr.8e23.net/")
+mainnet = lambda k: Api("wss://nostr.8e23.net/", k)

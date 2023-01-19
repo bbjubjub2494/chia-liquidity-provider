@@ -1,6 +1,7 @@
 {
   chia,
   python3Packages,
+  bip32,
 }:
 python3Packages.buildPythonApplication {
   name = "chia_liquidity_provider";
@@ -20,7 +21,7 @@ python3Packages.buildPythonApplication {
     aiosqlite
     aiomisc
     click
-    secp256k1
+    bip32
     xdg
   ];
 
