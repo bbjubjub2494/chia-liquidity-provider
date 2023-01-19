@@ -102,13 +102,13 @@ class Engine:
 
     async def _create_trade(self, base_delta, quote_delta):
         position = await self.db.get_position()
-        offer, trade = await self.rpc.conn.create_offer_for_ids(
+        _, trade = await self.rpc.conn.create_offer_for_ids(
             {position.base_asset_wallet_id: base_delta, position.quote_asset_wallet_id: quote_delta}
         )
         log.info("created trade %s", trade.trade_id)
         await self.db.insert_order(position, Order(trade.trade_id, base_delta, quote_delta))
         try:
-            await asyncio.gather(*(dex.post_offer(offer) for dex in self.dexes))
+            await asyncio.gather(*(dex.post_offer(trade) for dex in self.dexes))
         except:
             log.exception("error posting trade (ignoring)")
         else:

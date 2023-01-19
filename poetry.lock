@@ -177,6 +177,18 @@ files = [
 typing_extensions = ">=3.7.2"
 
 [[package]]
+name = "asn1crypto"
+version = "1.5.1"
+description = "Fast ASN.1 parser and serializer with definitions for private keys, public keys, certificates, CRL, OCSP, CMS, PKCS#3, PKCS#7, PKCS#8, PKCS#12, PKCS#5, X.509 and TSP"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "asn1crypto-1.5.1-py2.py3-none-any.whl", hash = "sha256:db4e40728b728508912cbb3d44f19ce188f218e9eba635821bb4b68564f8fd67"},
+    {file = "asn1crypto-1.5.1.tar.gz", hash = "sha256:13ae38502be632115abf8a24cbe5f4da52e3b5231990aff31123c805306ccb9c"},
+]
+
+[[package]]
 name = "async-timeout"
 version = "4.0.2"
 description = "Timeout context manager for asyncio programs"
@@ -206,6 +218,37 @@ dev = ["attrs[docs,tests]"]
 docs = ["furo", "myst-parser", "sphinx", "sphinx-notfound-page", "sphinxcontrib-towncrier", "towncrier", "zope.interface"]
 tests = ["attrs[tests-no-zope]", "zope.interface"]
 tests-no-zope = ["cloudpickle", "cloudpickle", "hypothesis", "hypothesis", "mypy (>=0.971,<0.990)", "mypy (>=0.971,<0.990)", "pympler", "pympler", "pytest (>=4.3.0)", "pytest (>=4.3.0)", "pytest-mypy-plugins", "pytest-mypy-plugins", "pytest-xdist[psutil]", "pytest-xdist[psutil]"]
+
+[[package]]
+name = "base58"
+version = "2.1.1"
+description = "Base58 and Base58Check implementation."
+category = "main"
+optional = false
+python-versions = ">=3.5"
+files = [
+    {file = "base58-2.1.1-py3-none-any.whl", hash = "sha256:11a36f4d3ce51dfc1043f3218591ac4eb1ceb172919cebe05b52a5bcc8d245c2"},
+    {file = "base58-2.1.1.tar.gz", hash = "sha256:c5d0cb3f5b6e81e8e35da5754388ddcc6d0d14b6c6a132cb93d69ed580a7278c"},
+]
+
+[package.extras]
+tests = ["PyHamcrest (>=2.0.2)", "mypy", "pytest (>=4.6)", "pytest-benchmark", "pytest-cov", "pytest-flake8"]
+
+[[package]]
+name = "bip32"
+version = "3.4"
+description = "Minimalistic implementation of the BIP32 key derivation scheme"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "bip32-3.4-py3-none-any.whl", hash = "sha256:c18099c25cabc087d081142d040eacb6fdf09f2c61fde3247e1f61313d1c0d26"},
+    {file = "bip32-3.4.tar.gz", hash = "sha256:09213225d99ede936c39a4f5a520549d8ecc49ebe3fa15608a17ea4aa9f61a10"},
+]
+
+[package.dependencies]
+base58 = ">=2.0,<3.0"
+coincurve = ">=15.0,<19"
 
 [[package]]
 name = "bitstring"
@@ -622,6 +665,62 @@ files = [
     {file = "clvm_tools_rs-0.1.25-cp37-abi3-win_amd64.whl", hash = "sha256:0ca1dc58bb1734baff6e371fa40958caa542159d1ef1c9e450f1b8d8421fc899"},
     {file = "clvm_tools_rs-0.1.25.tar.gz", hash = "sha256:c7bb2eafae1ddc61d6159d041f77fc82c8fa517f8945a3c522695805a4793c02"},
 ]
+
+[[package]]
+name = "coincurve"
+version = "18.0.0"
+description = "Cross-platform Python CFFI bindings for libsecp256k1"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "coincurve-18.0.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:0b1a42eba91b9e4f833309e94bc6a270b1700cb4567d4809ef91f00968b57925"},
+    {file = "coincurve-18.0.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:116bf1b60a6e72e23c6b153d7c79f0e565d82973d917a3cecf655ffb29263163"},
+    {file = "coincurve-18.0.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:d53e2a268142924c24e9b786b3e6c3603fae54bb8211560036b0e9ce6a9f2dbc"},
+    {file = "coincurve-18.0.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0b31ab366fadff16ecfdde96ffc07e70fee83850f88bd1f985a8b4977a68bbfb"},
+    {file = "coincurve-18.0.0-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:07e3c37cfadac6896668a130ea46296a3dfdeea0160fd66a51e377ad00795269"},
+    {file = "coincurve-18.0.0-cp310-cp310-musllinux_1_1_aarch64.whl", hash = "sha256:f3e5f2a2d774050b3ea8bf2167f2d598fde58d7690779931516714d98b65d884"},
+    {file = "coincurve-18.0.0-cp310-cp310-musllinux_1_1_i686.whl", hash = "sha256:83379dd70291480df2052554851bfd17444c003aef7c4bb02d96d73eec69fe28"},
+    {file = "coincurve-18.0.0-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:33678f6b43edbeab6605584c725305f4f814239780c53eba0f8e4bc4a52b1d1a"},
+    {file = "coincurve-18.0.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:f40646d5f29ac9026f8cc1b368bc9ab68710fad055b64fbec020f9bbfc99b242"},
+    {file = "coincurve-18.0.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:779da694dea1b1d09e16b00e079f6a1195290ce9568f39c95cddf35f1f49ec49"},
+    {file = "coincurve-18.0.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:7844f01904e32317a00696a27fd771860e53a2fa62e5c66eace9337d2742c9e6"},
+    {file = "coincurve-18.0.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:257c6171cd0301c119ef41360f0d0c2fb5cc288717b33d3bd5482a4c9ae04551"},
+    {file = "coincurve-18.0.0-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:f8bcb9c40fd730cf377fa448f1304355d6497fb3d00b7b0a69a10dfcc14a6d28"},
+    {file = "coincurve-18.0.0-cp311-cp311-musllinux_1_1_aarch64.whl", hash = "sha256:e3abb7f65e2b5fb66a15e374faeaafe6700fdb83fb66d1873ddff91c395a3b74"},
+    {file = "coincurve-18.0.0-cp311-cp311-musllinux_1_1_i686.whl", hash = "sha256:f44b9ba588b34795d1b4074f9a9fa372adef3fde58300bf32f40a69e8cd72a23"},
+    {file = "coincurve-18.0.0-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:908467330cd3047c71105a08394c4f3e7dce76e4371b030ba8b0ef863013e3ca"},
+    {file = "coincurve-18.0.0-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:599b1b3cf097cae920d97f31a5b8e8aff185ca8fa5d8a785b2edf7b199fb9731"},
+    {file = "coincurve-18.0.0-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:2d2c20d108580bce5efedb980688031462168f4de2446de95898b48a249127a2"},
+    {file = "coincurve-18.0.0-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:eba563f7f70c10323227d1890072172bd84df6f814c9a6b012033b214426b6cf"},
+    {file = "coincurve-18.0.0-cp37-cp37m-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:412a06b7d1b8229f25318f05e76310298da5ad55d73851eabac7ddfdcdc5bff4"},
+    {file = "coincurve-18.0.0-cp37-cp37m-musllinux_1_1_aarch64.whl", hash = "sha256:286969b6f789bbd9d744d28350a3630c1cb3ee045263469a28892f70a4a6654a"},
+    {file = "coincurve-18.0.0-cp37-cp37m-musllinux_1_1_i686.whl", hash = "sha256:14700463009c7d799a746929728223aa53ff1ece394ea408516d98d637434883"},
+    {file = "coincurve-18.0.0-cp37-cp37m-musllinux_1_1_x86_64.whl", hash = "sha256:7f1142252e870f091b2c2c21cc1fadfdd29af23d02e99f29add0f14d1ba94b4c"},
+    {file = "coincurve-18.0.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:cd11d2ca5b7e989c5ce1af217a2ad78c19c21afca786f198d1b1a408d6f408dc"},
+    {file = "coincurve-18.0.0-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:1bce17d7475cee9db2c2fa7af07eaab582732b378acf6dcaee417de1df2d8661"},
+    {file = "coincurve-18.0.0-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:4ab662b67454fea7f0a5ae855ba6ad9410bcaebe68b97f4dade7b5944dec3a11"},
+    {file = "coincurve-18.0.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:23b9ced9cce32dabb4bc15fa6449252fa51efddf0268481973e4c3772a5a68c6"},
+    {file = "coincurve-18.0.0-cp38-cp38-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:d05641cf31d68514c47cb54105d20acbae79fc3ee3942454eaaf411babb3f880"},
+    {file = "coincurve-18.0.0-cp38-cp38-musllinux_1_1_aarch64.whl", hash = "sha256:a7b31efe56b3f6434828ad5f6ecde4a95747bb69b59032746482eebb8f3456a4"},
+    {file = "coincurve-18.0.0-cp38-cp38-musllinux_1_1_i686.whl", hash = "sha256:2d95103ed43df855121cd925869ae2589360a8d94fcd61b236958deacfb9a359"},
+    {file = "coincurve-18.0.0-cp38-cp38-musllinux_1_1_x86_64.whl", hash = "sha256:abeb4c1d78e1a81a3f1c99a406cd858669582ada2d976e876ef694f57dec95ca"},
+    {file = "coincurve-18.0.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:fceca9d6ecaa1e8f891675e4f4ff530d54e41c648fc6e8a816835ffa640fa899"},
+    {file = "coincurve-18.0.0-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:e009f06287507158f16c82cc313c0f3bfd0e9ec1e82d1a4d5fa1c5b6c0060f69"},
+    {file = "coincurve-18.0.0-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:6a0c0c1e492ef08efe99d25a23d535e2bff667bbef43d71a6f8893ae811b3d81"},
+    {file = "coincurve-18.0.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3caf58877bcf41eb4c1be7a2d54317f0b31541d99ba248dae28821b19c52a0db"},
+    {file = "coincurve-18.0.0-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:8964e680c622a2b5eea940abdf51c77c1bd3d4fde2a04cec2420bf91981b198a"},
+    {file = "coincurve-18.0.0-cp39-cp39-musllinux_1_1_aarch64.whl", hash = "sha256:73e464e0ace77c686fdc54590e5592905b6802f9fc20a0c023f0b1585669d6a3"},
+    {file = "coincurve-18.0.0-cp39-cp39-musllinux_1_1_i686.whl", hash = "sha256:ba9eaddd50a2ce0d891af7cee11c2e048d1f0f44bf87db00a5c4b1eee7e3391b"},
+    {file = "coincurve-18.0.0-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:8290903d4629f27f9f3cdeec72ffa97536c5a6ed5ba7e3413b2707991c650fbe"},
+    {file = "coincurve-18.0.0-py3-none-win32.whl", hash = "sha256:c60690bd7704d8563968d2dded33eb514875a52b5964f085409965ad041b2555"},
+    {file = "coincurve-18.0.0-py3-none-win_amd64.whl", hash = "sha256:704d1abf2e78def33988368592233a8ec9b98bfc45dfa2ec9e898adfad46e5ad"},
+    {file = "coincurve-18.0.0.tar.gz", hash = "sha256:c86626afe417a09d8e80e56780efcae3ae516203b23b5ade84813916e1c94fc1"},
+]
+
+[package.dependencies]
+asn1crypto = "*"
+cffi = ">=1.3.0"
 
 [[package]]
 name = "colorama"
@@ -1445,42 +1544,6 @@ files = [
 ]
 
 [[package]]
-name = "secp256k1"
-version = "0.14.0"
-description = "FFI bindings to libsecp256k1"
-category = "main"
-optional = false
-python-versions = "*"
-files = [
-    {file = "secp256k1-0.14.0-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:f666c67dcf1dc69e1448b2ede5e12aaf382b600204a61dbc65e4f82cea444405"},
-    {file = "secp256k1-0.14.0-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:fcabb3c3497a902fb61eec72d1b69bf72747d7bcc2a732d56d9319a1e8322262"},
-    {file = "secp256k1-0.14.0-cp310-cp310-musllinux_1_1_i686.whl", hash = "sha256:7a27c479ab60571502516a1506a562d0a9df062de8ad645313fabfcc97252816"},
-    {file = "secp256k1-0.14.0-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:f4b9306bff6dde020444dfee9ca9b9f5b20ca53a2c0b04898361a3f43d5daf2e"},
-    {file = "secp256k1-0.14.0-cp36-cp36m-manylinux_2_5_i686.manylinux1_i686.manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:72735da6cb28273e924431cd40aa607e7f80ef09608c8c9300be2e0e1d2417b4"},
-    {file = "secp256k1-0.14.0-cp36-cp36m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:87f4ad42a370f768910585989a301d1d65de17dcd86f6e8def9b021364b34d5c"},
-    {file = "secp256k1-0.14.0-cp36-cp36m-musllinux_1_1_i686.whl", hash = "sha256:130f119b06142e597c10eb4470b5a38eae865362d01aaef06b113478d77f728d"},
-    {file = "secp256k1-0.14.0-cp36-cp36m-musllinux_1_1_x86_64.whl", hash = "sha256:3aedcfe6eb1c5fa7c6be25b7cc91c76d8eb984271920ba0f7a934ae41ed56f51"},
-    {file = "secp256k1-0.14.0-cp37-cp37m-manylinux_2_5_i686.manylinux1_i686.manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:c91dd3154f6c46ac798d9a41166120e1751222587f54516cc3f378f56ce4ac82"},
-    {file = "secp256k1-0.14.0-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:fec790cb6d0d37129ca0ce5b3f8e85692d5fb618d1c440f189453d18694035df"},
-    {file = "secp256k1-0.14.0-cp37-cp37m-musllinux_1_1_i686.whl", hash = "sha256:63eb148196b8f646922d4be6739b17fbbf50ebb3a020078c823e2445d88b7a81"},
-    {file = "secp256k1-0.14.0-cp37-cp37m-musllinux_1_1_x86_64.whl", hash = "sha256:adc23a4c5d24c95191638eb2ca313097827f07db102e77b59faed15d50c98cae"},
-    {file = "secp256k1-0.14.0-cp38-cp38-manylinux_2_5_i686.manylinux1_i686.manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:ce0314788d3248b275426501228969fd32f6501c9d1837902ee0e7bd8264a36f"},
-    {file = "secp256k1-0.14.0-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:bc761894b3634021686714278fc62b73395fa3eded33453eadfd8a00a6c44ef3"},
-    {file = "secp256k1-0.14.0-cp38-cp38-musllinux_1_1_i686.whl", hash = "sha256:373dc8bca735f3c2d73259aa2711a9ecea2f3c7edbb663555fe3422e3dd76102"},
-    {file = "secp256k1-0.14.0-cp38-cp38-musllinux_1_1_x86_64.whl", hash = "sha256:fe3f503c9dfdf663b500d3e0688ad842e116c2907ad3f1e1d685812df3f56290"},
-    {file = "secp256k1-0.14.0-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:4b1bf09953cde181132cf5e9033065615e5c2694e803165e2db763efa47695e5"},
-    {file = "secp256k1-0.14.0-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:6af07be5f8612628c3638dc7b208f6cc78d0abae3e25797eadb13890c7d5da81"},
-    {file = "secp256k1-0.14.0-cp39-cp39-musllinux_1_1_i686.whl", hash = "sha256:a8dbd75a9fb6f42de307f3c5e24573fe59c3374637cbf39136edc66c200a4029"},
-    {file = "secp256k1-0.14.0-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:97a30c8dae633cb18135c76b6517ae99dc59106818e8985be70dbc05dcc06c0d"},
-    {file = "secp256k1-0.14.0-pp37-pypy37_pp73-manylinux_2_5_i686.manylinux1_i686.manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:f4062d8c101aa63b9ecb3709f1f075ad9c01b6672869bbaa1bd77271816936a7"},
-    {file = "secp256k1-0.14.0-pp37-pypy37_pp73-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:c9e7c024ff17e9b9d7c392bb2a917da231d6cb40ab119389ff1f51dca10339a4"},
-    {file = "secp256k1-0.14.0.tar.gz", hash = "sha256:82c06712d69ef945220c8b53c1a0d424c2ff6a1f64aee609030df79ad8383397"},
-]
-
-[package.dependencies]
-cffi = ">=1.3.0"
-
-[[package]]
 name = "secretstorage"
 version = "3.3.3"
 description = "Python bindings to FreeDesktop.org Secret Service API"
@@ -1875,4 +1938,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "ebf54d1134d78fe213f7a968bf54954eb8c500f38201874abc53e3a7b0b1cd3e"
+content-hash = "e6673e8707f2c3fb97dff52592b1daf9f4869a47a9056fe22735a5bdb82628c3"

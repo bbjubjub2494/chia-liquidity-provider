@@ -30,9 +30,12 @@
 
       nixosModules.default = import nixos/modules/default.nix {inherit self;};
 
-      outputsBuilder = channels: {
+      outputsBuilder = channels: let
+        inherit (channels.nixpkgs.chiaNix) chia python3Packages;
+        bip32 = python3Packages.callPackage nix/packages/python/bip32.nix {};
+      in {
         packages.default = channels.nixpkgs.callPackage nix/package.nix {
-          inherit (channels.nixpkgs.chiaNix) chia python3Packages;
+          inherit chia python3Packages bip32;
         };
         devShells.default = channels.nixpkgs.callPackage nix/devshell.nix {};
         formatter = channels.nixpkgs.alejandra;

@@ -5,7 +5,10 @@ from unittest.mock import Mock
 
 import aiomisc
 import click
+import coincurve
+from bip32 import BIP32
 from chia.types.blockchain_format.sized_bytes import bytes32
+from chia.util.keychain import mnemonic_to_seed
 from chia.wallet.trade_record import TradeRecord
 
 from chia_liquidity_provider import Engine, Grid, LiquidityCurve, dexie_api, hashgreen_api, nostrdex_api
@@ -18,7 +21,23 @@ log = logging.getLogger("chia_liquidity_provider")
 db = DatabaseService()
 rpc = WalletRpcClientService()
 services = [db, rpc]
-dexes = [dexie_api.mainnet, hashgreen_api.mainnet, nostrdex_api.mainnet]
+dexes = [dexie_api.mainnet, hashgreen_api.mainnet]
+
+
+async def init_nostr():
+    # FIXME: digusting hack
+    global dexes
+    while not await rpc.conn.get_synced():
+        log.info("waiting for wallet to be synced")
+        await asyncio.sleep(30)
+
+    fingerprint = await rpc.conn.get_logged_in_fingerprint()
+    rep = await rpc.conn.get_private_key(fingerprint)
+    mnemonic = rep["seed"]
+    bip32 = BIP32.from_seed(mnemonic_to_seed(mnemonic))
+    privkey = coincurve.PrivateKey(bip32.get_privkey_from_path("m/44'/1237'/0'/0'/0/0"))
+    print(privkey.to_int())
+    dexes.append(nostrdex_api.mainnet(privkey))
 
 
 @click.group()
@@ -86,6 +105,7 @@ def init(fingerprint: int, x_max, p_min, p_max, p_init) -> None:
     curve = LiquidityCurve.make_out_of_range(x_max, p_min, p_max)
 
     async def amain() -> None:
+        await init_nostr()
         tm = await Engine.from_scratch(base, quote, p_init, Grid.make(curve, Δx, x_max), rpc, db, dexes)
 
     aiomisc.run(amain(), *services)
@@ -94,6 +114,7 @@ def init(fingerprint: int, x_max, p_min, p_max, p_init) -> None:
 @main.command()
 def manage() -> None:
     async def amain() -> None:
+        await init_nostr()
         tm = Engine(rpc, db, dexes)
         while True:
             try:
