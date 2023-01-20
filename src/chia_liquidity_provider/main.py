@@ -1,12 +1,9 @@
 import asyncio
 import logging
 from decimal import Decimal
-from unittest.mock import Mock
 
 import aiomisc
 import click
-from chia.types.blockchain_format.sized_bytes import bytes32
-from chia.wallet.trade_record import TradeRecord
 
 from chia_liquidity_provider import Engine, Grid, LiquidityCurve, dexie_api, hashgreen_api
 from chia_liquidity_provider.services import DatabaseService, WalletRpcClientService
@@ -85,7 +82,7 @@ def init(fingerprint: int, x_max, p_min, p_max, p_init) -> None:
     curve = LiquidityCurve.make_out_of_range(x_max, p_min, p_max)
 
     async def amain() -> None:
-        tm = await Engine.from_scratch(
+        await Engine.from_scratch(
             base,
             quote,
             p_init,

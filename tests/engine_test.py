@@ -1,7 +1,4 @@
-import os
-import subprocess
 from dataclasses import dataclass
-from pathlib import Path
 from unittest.mock import Mock
 
 import aiohttp
@@ -10,13 +7,13 @@ import pytest
 from chia.consensus.coinbase import create_puzzlehash_for_pk
 from chia.types.blockchain_format.sized_bytes import bytes32
 from chia.util.bech32m import encode_puzzle_hash
-from chia.util.ints import uint16, uint32, uint64
+from chia.util.ints import uint32
 from chia.util.keychain import KeyData, generate_mnemonic
 from chia.wallet.derive_keys import master_sk_to_wallet_sk
 from chia.wallet.trading.offer import Offer
 
-from chia_liquidity_provider import Engine, Grid, LiquidityCurve, dexie_api, hashgreen_api
-from chia_liquidity_provider.types import Asset
+from chia_liquidity_provider import Engine, LiquidityCurve, dexie_api, hashgreen_api
+from chia_liquidity_provider.types import Asset, Grid
 
 XCH = Asset.XCH
 TRILLION = 1_000_000_000_000
@@ -39,27 +36,29 @@ def services(db, rpc):
 
 @pytest.fixture
 def switch_fingerprint(rpc):
-    @aiomisc.asyncretry(max_tries=100, exceptions=(aiohttp.client_exceptions.ClientConnectorError,), pause=1)
-    async def switch_fingerprint(fingerprint):
+    @aiomisc.asyncretry(
+        max_tries=100, exceptions=(aiohttp.client_exceptions.ClientConnectorError,), pause=1
+    )
+    async def switch_fingerprint0(fingerprint):
         rep = await rpc.conn.log_in(fingerprint)
         if rep["success"] is False:
             raise Exception("error logging in", rep)
 
-    return switch_fingerprint
+    return switch_fingerprint0
 
 
 @pytest.fixture
 def wait_until_synced(rpc):
-    async def wait_until_synced():
+    async def wait_until_synced0():
         while not await rpc.conn.get_synced():
             pass
 
-    return wait_until_synced
+    return wait_until_synced0
 
 
 @pytest.fixture
 def wait_until_settled(rpc):
-    async def wait_until_settled(wallet_id):
+    async def wait_until_settled0(wallet_id):
         while True:
             for t in await rpc.conn.get_transactions(wallet_id):
                 if not t.confirmed:
@@ -67,7 +66,7 @@ def wait_until_settled(rpc):
             else:
                 break
 
-    return wait_until_settled
+    return wait_until_settled0
 
 
 @dataclass
@@ -80,7 +79,9 @@ XCH_WALLET_ID = uint32(1)
 
 
 @pytest.fixture
-async def test_wallet(rpc, switch_fingerprint, wait_until_synced, wait_until_settled, chia_simulator):
+async def test_wallet(
+    rpc, switch_fingerprint, wait_until_synced, wait_until_settled, chia_simulator
+):
     """
     generate a fresh set of wallets, funded with 1 XCH and a billion CATs.
     """
@@ -105,7 +106,14 @@ async def test_wallet(rpc, switch_fingerprint, wait_until_synced, wait_until_set
 
 
 async def test_coin_create_offers(
-    test_wallet, rpc, switch_fingerprint, wait_until_synced, wait_until_settled, db, dexie, hashgreen
+    test_wallet,
+    rpc,
+    switch_fingerprint,
+    wait_until_synced,
+    wait_until_settled,
+    db,
+    dexie,
+    hashgreen,
 ):
     await switch_fingerprint(test_wallet.fingerprint)
     await wait_until_settled(int(XCH_WALLET_ID))
@@ -149,7 +157,14 @@ async def test_coin_create_offers(
 
 
 async def test_cat_create_offers(
-    test_wallet, rpc, switch_fingerprint, wait_until_synced, wait_until_settled, db, dexie, hashgreen
+    test_wallet,
+    rpc,
+    switch_fingerprint,
+    wait_until_synced,
+    wait_until_settled,
+    db,
+    dexie,
+    hashgreen,
 ):
     await switch_fingerprint(test_wallet.fingerprint)
     await wait_until_settled(int(XCH_WALLET_ID))
@@ -204,7 +219,14 @@ async def test_cat_create_offers(
 
 
 async def test_coin_selection_toomuch(
-    rpc, switch_fingerprint, wait_until_synced, wait_until_settled, test_wallet, db, dexie, hashgreen
+    rpc,
+    switch_fingerprint,
+    wait_until_synced,
+    wait_until_settled,
+    test_wallet,
+    db,
+    dexie,
+    hashgreen,
 ):
     await switch_fingerprint(test_wallet.fingerprint)
     await wait_until_settled(int(XCH_WALLET_ID))
@@ -227,14 +249,19 @@ async def test_coin_selection_toomuch(
 
 
 async def test_flip_offer(
-    test_wallet, rpc, switch_fingerprint, wait_until_synced, wait_until_settled, db, dexie, hashgreen, chia_simulator
+    test_wallet,
+    rpc,
+    switch_fingerprint,
+    wait_until_synced,
+    wait_until_settled,
+    db,
+    dexie,
+    hashgreen,
+    chia_simulator,
 ):
     await switch_fingerprint(test_wallet.fingerprint)
     await wait_until_settled(int(XCH_WALLET_ID))
     await wait_until_synced()
-
-    rep = await rpc.conn.create_wallet_for_existing_cat(test_wallet.cat.asset_id)
-    test_cat_wallet_id = uint32(rep["wallet_id"])
 
     x_max = 1 * XCH
     p_min = 60 * test_wallet.cat / (1 * XCH)

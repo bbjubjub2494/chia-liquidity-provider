@@ -1,6 +1,3 @@
-import asyncio
-from dataclasses import dataclass
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
 
@@ -23,7 +20,9 @@ class DatabaseService(aiomisc.Service, PositionTableMixin, OrderTableMixin, Data
     _conn: aiosqlite.Connection
     _location: Path
 
-    def __init__(self, position_id: str = "default", state_dir: Optional[Path] = None, **kwargs: Any):
+    def __init__(
+        self, position_id: str = "default", state_dir: Optional[Path] = None, **kwargs: Any
+    ):
         super().__init__(**kwargs)
 
         if state_dir is None:

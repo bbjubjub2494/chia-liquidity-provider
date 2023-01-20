@@ -48,4 +48,6 @@ class OrderTableMixin(DatabaseServiceBase):
         return r
 
     async def delete_order(self, order: Order) -> None:
-        await self.conn.execute(f"DELETE FROM {Order.TABLE_NAME} WHERE trade_id = ?", (order.trade_id,))
+        await self.conn.execute(
+            f"DELETE FROM {Order.TABLE_NAME} WHERE trade_id = ?", (order.trade_id,)
+        )

@@ -3,12 +3,10 @@ import dataclasses
 import logging
 import typing
 
-import xdg
 from chia.consensus.coinbase import create_puzzlehash_for_pk
 from chia.util.ints import uint32
 from chia.util.keychain import KeyData
 from chia.wallet.derive_keys import master_sk_to_wallet_sk
-from chia.wallet.trade_record import TradeRecord
 from chia.wallet.trading.trade_status import TradeStatus
 
 if typing.TYPE_CHECKING:
@@ -66,7 +64,9 @@ class Engine:
         self = cls(rpc=rpc, db=db, dexie=dexie, hashgreen=hashgreen)
 
         base_asset_amts = [-delta for delta, _ in position.grid.initial_orders(p_init) if delta < 0]
-        quote_asset_amts = [-delta for _, delta in position.grid.initial_orders(p_init) if delta < 0]
+        quote_asset_amts = [
+            -delta for _, delta in position.grid.initial_orders(p_init) if delta < 0
+        ]
 
         await self._split_coins(base_asset, base_asset_wallet_id, base_asset_amts)
         await self._split_coins(quote_asset, quote_asset_wallet_id, quote_asset_amts)
@@ -81,7 +81,9 @@ class Engine:
         position = await self.db.get_position()
         rep = await self.rpc.conn.get_private_key(position.fingerprint)
         kd = KeyData.from_mnemonic(rep["seed"])
-        wallet_sk = lambda i: master_sk_to_wallet_sk(kd.private_key, i)
+
+        def wallet_sk(i):
+            return master_sk_to_wallet_sk(kd.private_key, i)
 
         # split coins
         offset = await self.rpc.conn.get_current_derivation_index()
@@ -93,7 +95,9 @@ class Engine:
             for i, amt in enumerate(amts)
         ]
         if asset == Asset.XCH:
-            tx = await self.rpc.conn.send_transaction_multi(wallet_id=wallet_id, additions=additions)
+            tx = await self.rpc.conn.send_transaction_multi(
+                wallet_id=wallet_id, additions=additions
+            )
         else:
             tx = await self.rpc.conn.cat_spend(wallet_id=wallet_id, additions=additions)
         while not tx.confirmed:
@@ -116,7 +120,7 @@ class Engine:
                 self.dexie.post_offer(offer),
                 self.hashgreen.post_offer(offer),
             )
-        except:
+        except Exception:
             log.exception("error posting trade (ignoring)")
         else:
             log.info("trade %s successfully posted", trade.trade_id)
