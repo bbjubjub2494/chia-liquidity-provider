@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from decimal import Decimal, localcontext
-from typing import ClassVar, Optional, Sequence, Union
+from typing import ClassVar, Optional, Union
 
 from chia.types.blockchain_format.sized_bytes import bytes32
-from chia.util.ints import uint32, uint64
+from chia.util.ints import uint64
 
 MOJOS_PER_XCH = 1_000_000_000_000
 MOJOS_PER_CAT = 1_000

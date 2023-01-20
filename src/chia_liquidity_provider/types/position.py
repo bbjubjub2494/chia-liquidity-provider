@@ -1,9 +1,11 @@
 import json
 from dataclasses import dataclass
 
+from chia.util.ints import uint32
+
 from chia_liquidity_provider.abc import DatabaseServiceBase
 
-from .grid import *
+from .grid import Grid
 
 
 @dataclass(frozen=True)

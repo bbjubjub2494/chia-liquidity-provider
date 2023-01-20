@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from chia_liquidity_provider.services import *
+from chia_liquidity_provider.services import DatabaseService, WalletRpcClientService
 
 
 @pytest.fixture
@@ -14,7 +14,7 @@ def db(tmpdir):
 
 
 @pytest.fixture
-def rpc(services, chia_simulator):
+def rpc(chia_simulator):
     return WalletRpcClientService()
 
 
@@ -29,7 +29,9 @@ class ChiaSimulator:
 
 
 # we keep this one constant to avoid replotting
-FARMER_MNEMONIC = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+FARMER_MNEMONIC = (
+    "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+)
 FARMER_FINGERPRINT = 3781984839
 
 
@@ -40,7 +42,6 @@ def chia_simulator():
 
     os.environ["HOME"] = os.path.dirname(tests.__file__)
 
-    subprocess.run(["chia", "init"])
     simulator_root_path = Path.home() / ".chia/simulator"
     subprocess.run(["cdv", "sim", "create", "-m", FARMER_MNEMONIC], check=True)
     subprocess.run(["cdv", "sim", "start", "--wallet"], check=True)
